@@ -33,7 +33,7 @@ INTERNAL_IPS = [
 ]
 
 # Application definition
-
+AUTH_USER_MODEL = 'users_api.User'
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
