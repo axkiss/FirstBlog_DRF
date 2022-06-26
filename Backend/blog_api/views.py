@@ -1,6 +1,9 @@
 from rest_framework import viewsets, permissions, pagination
+from rest_framework.generics import get_object_or_404, ListAPIView
 
-from .serializers import PostSerializer
+from taggit.models import Tag
+
+from .serializers import PostSerializer, TagSerializer
 from .models import Post
 
 
@@ -18,3 +21,22 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     pagination_class = MyPageNumberPagination
 
+
+class TagListView(ListAPIView):
+    """List of posts including tag"""
+    serializer_class = PostSerializer
+    permission_classes = [permissions.AllowAny]
+    pagination_class = MyPageNumberPagination
+
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+        tag = get_object_or_404(Tag, slug=slug)
+        posts = Post.objects.filter(tag=tag).order_by('-id')
+        return posts
+
+
+class TagsCloudListView(ListAPIView):
+    """List of all tags"""
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+    permission_classes = [permissions.AllowAny]
