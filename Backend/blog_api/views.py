@@ -3,8 +3,9 @@ from rest_framework.generics import get_object_or_404, ListAPIView
 
 from taggit.models import Tag
 
-from .serializers import PostSerializer, TagCloudSerializer
+from .serializers import PostSerializer, TagCloudSerializer, PopularPostSerializer
 from .models import Post
+from .services import get_popular_posts
 
 
 class MyPageNumberPagination(pagination.PageNumberPagination):
@@ -40,3 +41,11 @@ class TagCloudListView(ListAPIView):
     serializer_class = TagCloudSerializer
     queryset = Post.tag.most_common()
     permission_classes = [permissions.AllowAny]
+
+
+class PopularPostListView(ListAPIView):
+    """List of popular posts for n days"""
+    serializer_class = PopularPostSerializer
+    queryset = get_popular_posts(Post, days=7, cnt_posts=5)
+    permission_classes = [permissions.AllowAny]
+

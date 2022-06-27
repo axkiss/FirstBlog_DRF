@@ -57,3 +57,19 @@ def get_unique_slug(instance, max_length=80):
         max_length -= len(msec)
         return instance.slug[:max_length] + '-' + msec
     return instance.slug[:max_length]
+
+
+def get_popular_posts(model, days: int, cnt_posts: int):
+    """Return popular posts for n days"""
+    # if blog hasn't publications
+    last_post = model.objects.last()
+    if last_post is None:
+        return ''
+    end_date = last_post.created_at
+    start_date = end_date - timezone.timedelta(days=days)
+    popular_posts = model.objects.filter(
+        created_at__range=(start_date, end_date)).order_by('-views')[:cnt_posts]
+    # if no publications for a long time
+    if len(popular_posts) < cnt_posts:
+        popular_posts = model.objects.order_by('-views', '-created_at')[:cnt_posts]
+    return popular_posts

@@ -31,3 +31,9 @@ class TagCloudSerializer(serializers.Serializer):
     name = serializers.CharField()
     slug = serializers.CharField()
     num_times = serializers.IntegerField()
+
+
+class PopularPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('title', 'thumbnail', 'slug')
