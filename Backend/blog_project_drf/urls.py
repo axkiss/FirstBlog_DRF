@@ -24,6 +24,7 @@ urlpatterns = [
     path('account/', include('users_api.urls')),
     path('blog/', include('blog_api.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
 
 if settings.DEBUG:
