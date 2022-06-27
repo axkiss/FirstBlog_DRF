@@ -7,7 +7,7 @@ router.register('posts', views.PostViewSet, basename='posts')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('tags', views.TagsCloudListView.as_view(), name='tags'),
+    path('tags', views.TagCloudListView.as_view(), name='tags'),
     path('tags/<slug:slug>', views.TagListView.as_view(), name='tag'),
 
 ]

@@ -8,7 +8,8 @@ from .models import Post
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Serializer for tags"""
+    """Serializer for tags in posts"""
+
     class Meta:
         model = Tag
         fields = ('name', 'slug')
@@ -23,3 +24,10 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
         model = Post
         fields = '__all__'
         lookup_field = 'slug'
+
+
+class TagCloudSerializer(serializers.Serializer):
+    """Serializer for tag cloud (list of all tags)"""
+    name = serializers.CharField()
+    slug = serializers.CharField()
+    num_times = serializers.IntegerField()

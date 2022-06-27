@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404, ListAPIView
 
 from taggit.models import Tag
 
-from .serializers import PostSerializer, TagSerializer
+from .serializers import PostSerializer, TagCloudSerializer
 from .models import Post
 
 
@@ -35,8 +35,8 @@ class TagListView(ListAPIView):
         return posts
 
 
-class TagsCloudListView(ListAPIView):
-    """List of all tags"""
-    serializer_class = TagSerializer
-    queryset = Tag.objects.all()
+class TagCloudListView(ListAPIView):
+    """Sorted list of tags with amount of their use"""
+    serializer_class = TagCloudSerializer
+    queryset = Post.tag.most_common()
     permission_classes = [permissions.AllowAny]
