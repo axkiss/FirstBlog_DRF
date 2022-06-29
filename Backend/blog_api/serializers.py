@@ -47,3 +47,11 @@ class FeedBackSerializer(serializers.Serializer):
     email_from = serializers.EmailField()
     subject = serializers.CharField(min_length=2, max_length=256)
     main_body = serializers.CharField(min_length=2)
+
+
+class SearchPostSerializer(serializers.ModelSerializer):
+    """Serializer for posts in search results"""
+
+    class Meta:
+        model = Post
+        fields = ('title', 'description', 'thumbnail', 'slug')
