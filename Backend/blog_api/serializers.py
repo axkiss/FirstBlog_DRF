@@ -34,6 +34,16 @@ class TagCloudSerializer(serializers.Serializer):
 
 
 class PopularPostSerializer(serializers.ModelSerializer):
+    """Serializer for the most popular posts on blog"""
+
     class Meta:
         model = Post
         fields = ('title', 'thumbnail', 'slug')
+
+
+class FeedBackSerializer(serializers.Serializer):
+    """Serializer for Feedback message"""
+    name = serializers.CharField(min_length=2, max_length=256)
+    email_from = serializers.EmailField()
+    subject = serializers.CharField(min_length=2, max_length=256)
+    main_body = serializers.CharField(min_length=2)
