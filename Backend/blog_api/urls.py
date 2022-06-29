@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('tags', views.TagCloudListView.as_view(), name='tags'),
     path('tags/<slug:slug>', views.TagListView.as_view(), name='tag'),
-    path('popular_posts', views.PopularPostListView.as_view(), name='popular_posts')
+    path('popular_posts', views.PopularPostListView.as_view(), name='popular_posts'),
+    path('feedback', views.FeedBackView.as_view(), name='feedback'),
 
 ]
