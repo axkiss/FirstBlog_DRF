@@ -7,9 +7,10 @@ from rest_framework.views import APIView
 from taggit.models import Tag
 
 from blog_project_drf.settings import EMAIL_FEEDBACK
-from .serializers import PostSerializer, TagCloudSerializer, PopularPostSerializer, FeedBackSerializer
+from .serializers import PostSerializer, TagCloudSerializer, PopularPostSerializer, FeedBackSerializer, \
+    SearchPostSerializer
 from .models import Post
-from .services import get_popular_posts
+from .services import get_popular_posts, get_results_search
 from .utils import send_feedback
 
 
@@ -57,8 +58,8 @@ class PopularPostListView(ListAPIView):
 
 class FeedBackView(APIView):
     """Sending feedback from the blog to EMAIL_FEEDBACK"""
-    permission_classes = [permissions.AllowAny]
     serializer_class = FeedBackSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -71,3 +72,12 @@ class FeedBackView(APIView):
         return Response({"status": "invalid data"})
 
 
+class SearchPostListView(ListAPIView):
+    """List of posts including a search query"""
+    serializer_class = SearchPostSerializer
+    permission_classes = [permissions.AllowAny]
+    pagination_class = MyPageNumberPagination
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('q')
+        return get_results_search(Post, search_query, posts_on_page=self.pagination_class.page_size)
