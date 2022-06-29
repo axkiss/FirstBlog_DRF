@@ -1,0 +1,15 @@
+{% load i18n %}{% autoescape off %}
+This letter sent you {{ name }} | {{ email_from }}
+
+------------
+Message text
+------------
+
+{{ subject }}
+
+{{ main_body }}
+
+-----------------------------
+The {{ site_name }} team
+{{ protocol }}://{{ domain }}
+{% endautoescape %}
