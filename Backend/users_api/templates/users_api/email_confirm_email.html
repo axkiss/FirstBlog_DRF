@@ -1,0 +1,10 @@
+{% load i18n %}{% autoescape off %}
+
+Hi, {{ user.get_username }}! Please click the link below to complete your registration on {{ site_name }}
+
+{{ protocol }}://{{ domain }}{% url 'users_api:email_confirm_verify' uidb64=uid token=token %}
+
+
+{% blocktranslate %}The {{ site_name }} team{% endblocktranslate %}
+
+{% endautoescape %}
