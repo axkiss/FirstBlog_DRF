@@ -1,6 +1,8 @@
 from django.utils.deconstruct import deconstructible
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.core import exceptions
+from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
 
 
 @deconstructible()
@@ -21,7 +23,7 @@ class ImageSizeValidator:
         if self.min_width is not None \
                 and self.min_height is not None \
                 and (img.width < self.min_width or img.height < self.min_height):
-            raise ValidationError(
+            raise exceptions.ValidationError(
                 self.messages['small'],
                 code="invalid_size",
                 params={
@@ -34,7 +36,7 @@ class ImageSizeValidator:
         if self.max_width is not None \
                 and self.max_height is not None \
                 and (img.width > self.max_width or img.height > self.max_height):
-            raise ValidationError(
+            raise exceptions.ValidationError(
                 self.messages['big'],
                 code="invalid_size",
                 params={
@@ -53,3 +55,16 @@ class ImageSizeValidator:
                 self.max_width == other.max_width and
                 self.max_height == other.max_height
         )
+
+
+def password_validator(password: str, user, password2: str | None = None):
+    """Validate whether the password meets all standard django validator requirements"""
+    errors = []
+    if password != password2 and password2 is not None:
+        errors.append('Password is not equal.')
+    try:
+        validate_password(password=password, user=user)
+    except exceptions.ValidationError as ex:
+        errors.extend(ex.messages)
+    if errors:
+        raise serializers.ValidationError({'password': errors})
