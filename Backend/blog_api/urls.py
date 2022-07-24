@@ -12,5 +12,7 @@ urlpatterns = [
     path('popular_posts', views.PopularPostListView.as_view(), name='popular_posts'),
     path('feedback', views.FeedBackView.as_view(), name='feedback'),
     path('search/', views.SearchPostListView.as_view(), name='search'),
+    path('comments/<slug:post_slug>', views.CommentListView.as_view(), name='post_comments'),
+    path('comments/<slug:post_slug>/add/', views.AddCommentView.as_view(), name='add_comment')
 
 ]
