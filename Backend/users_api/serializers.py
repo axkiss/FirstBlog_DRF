@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers, exceptions
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from users_api.models import ExtraUserProfile
 from users_api.utils import send_email_for_verify
 from users_api.validators import password_validator
 
@@ -23,11 +24,20 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+class ExtraUserProfileSerializer(serializers.ModelSerializer):
+    """Serializer for extra user profile"""
+    class Meta:
+        model = ExtraUserProfile
+        fields = ('avatar', 'about_me')
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer for user profile"""
+    extrauserprofile = ExtraUserProfileSerializer()
+
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'username', 'email', 'groups')
+        fields = ('first_name', 'last_name', 'username', 'email', 'is_staff', 'groups', 'extrauserprofile')
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
