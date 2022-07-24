@@ -6,7 +6,7 @@ from . import views
 app_name = 'users_api'
 
 urlpatterns = [
-    path('token/', TokenObtainPairView.as_view(), name='token'),
+    path('token/', views.MyTokenObtainPairView.as_view(), name='token'),
     path('refresh_token/', TokenRefreshView.as_view(), name='refresh_token'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('email_confirm/<uidb64>/<token>/', views.EmailConfirmVerifyView.as_view(), name='email_confirm_verify'),

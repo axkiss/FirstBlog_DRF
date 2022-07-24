@@ -1,9 +1,15 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users_api.serializers import RegisterUserSerializer
+from users_api.serializers import MyTokenObtainPairSerializer, RegisterUserSerializer
 from users_api.services import get_user_by_uidb, check_user_and_token, add_user_to_group
 from users_api.utils import send_email_for_verify
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    """Custom login view"""
+    serializer_class = MyTokenObtainPairSerializer
 
 
 class RegisterView(generics.GenericAPIView):
