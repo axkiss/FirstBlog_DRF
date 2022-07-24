@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
@@ -5,9 +6,10 @@ from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
 from taggit.managers import TaggableManager
 
-from users_api.models import User
 from users_api.validators import ImageSizeValidator
 from .services import create_thumbnail_for_post, get_unique_slug
+
+User = get_user_model()
 
 
 class Post(models.Model):
@@ -43,3 +45,17 @@ class Post(models.Model):
         self.slug = get_unique_slug(self, max_length=80)
         create_thumbnail_for_post(self, height_side=100)
         super(Post, self).save(*args, **kwargs)
+
+
+class Comment(models.Model):
+    """Comments under the post"""
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_name')
+    text = models.TextField(max_length=500)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.text[:100]
