@@ -1,9 +1,26 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers, exceptions
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from users_api.utils import send_email_for_verify
 from users_api.validators import password_validator
 
 User = get_user_model()
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Serializer for check email verify when user logining"""
+
+    def validate(self, attrs):
+        data = super(MyTokenObtainPairSerializer, self).validate(attrs)
+        if not self.user.email_verify and not self.user.is_superuser:
+            send_email_for_verify(self.context["request"], self.user)
+            raise exceptions.AuthenticationFailed(
+                _("Email is not verify, check your email."),
+                "no_email_verify",
+            )
+        return data
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
