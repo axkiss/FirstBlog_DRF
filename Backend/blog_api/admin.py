@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Comment
 
 
 class AuthorFilter(admin.SimpleListFilter):
@@ -32,3 +32,10 @@ class PostAdmin(admin.ModelAdmin):
     @admin.display(description='TAGS')
     def post_tags(self, obj):
         return list(obj.tag.names())
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'username', 'created_at')
+    list_per_page = 25
+    search_fields = ('text',)
