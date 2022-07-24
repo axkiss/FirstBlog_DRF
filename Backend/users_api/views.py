@@ -1,15 +1,29 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users_api.serializers import MyTokenObtainPairSerializer, RegisterUserSerializer
+from users_api.serializers import MyTokenObtainPairSerializer, RegisterUserSerializer, UserProfileSerializer
 from users_api.services import get_user_by_uidb, check_user_and_token, add_user_to_group
 from users_api.utils import send_email_for_verify
+
+User = get_user_model()
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     """Custom login view"""
     serializer_class = MyTokenObtainPairSerializer
+
+
+class UserProfileView(generics.GenericAPIView):
+    """Show user profile"""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserProfileSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = generics.get_object_or_404(User, username=self.kwargs.get('username'))
+        return Response({"user": UserProfileSerializer(user, context=self.get_serializer_context()).data})
 
 
 class RegisterView(generics.GenericAPIView):
