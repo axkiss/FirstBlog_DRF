@@ -4,7 +4,7 @@ from taggit.models import Tag
 from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
 
 from users_api.models import User
-from .models import Post
+from .models import Post, Comment
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -55,3 +55,20 @@ class SearchPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('title', 'description', 'thumbnail', 'slug')
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+    """Serializer for list comments of post"""
+    username = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+    post = serializers.SlugRelatedField(slug_field="slug", queryset=Post.objects.all())
+
+    class Meta:
+        model = Comment
+        fields = ("id", "post", "username", "text", "created_at")
+
+
+class AddCommentSerializer(serializers.ModelSerializer):
+    """Serializer for create comment to post"""
+    class Meta:
+        model = Comment
+        fields = ('text',)
