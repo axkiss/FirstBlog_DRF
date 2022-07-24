@@ -8,8 +8,8 @@ from taggit.models import Tag
 
 from blog_project_drf.settings import EMAIL_FEEDBACK
 from .serializers import PostSerializer, TagCloudSerializer, PopularPostSerializer, FeedBackSerializer, \
-    SearchPostSerializer
-from .models import Post
+    SearchPostSerializer, CommentListSerializer, AddCommentSerializer
+from .models import Post, Comment
 from .services import get_popular_posts, get_results_search
 from .utils import send_feedback
 
@@ -27,6 +27,35 @@ class PostViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     permission_classes = [permissions.AllowAny]
     pagination_class = MyPageNumberPagination
+
+
+class CommentListView(ListAPIView):
+    """List comments of post"""
+    serializer_class = CommentListSerializer
+    permission_classes = [permissions.AllowAny]
+    pagination_class = MyPageNumberPagination
+
+    def get_queryset(self):
+        post_slug = self.kwargs.get('post_slug')
+        post = get_object_or_404(Post, slug=post_slug)
+        return post.comments.all()
+
+
+class AddCommentView(APIView):
+    """Add comment to post"""
+    serializer_class = AddCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            post_slug = self.kwargs.get('post_slug')
+            post = get_object_or_404(Post, slug=post_slug)
+            text = serializer.validated_data['text']
+            new_comment = Comment(post=post, username=request.user, text=text)
+            new_comment.save()
+            return Response({"detail": "Success"})
+        return Response({"detail": "Invalid data"})
 
 
 class TagListView(ListAPIView):
