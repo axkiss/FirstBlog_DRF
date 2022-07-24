@@ -23,6 +23,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    """Serializer for user profile"""
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'groups')
+
+
 class RegisterUserSerializer(serializers.ModelSerializer):
     """Serializer for user registration"""
     password2 = serializers.CharField(max_length=128, write_only=True)
