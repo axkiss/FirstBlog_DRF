@@ -1,6 +1,6 @@
 from django.core.mail import BadHeaderError
 from rest_framework import viewsets, permissions, pagination
-from rest_framework.generics import get_object_or_404, ListAPIView
+from rest_framework.generics import get_object_or_404, ListAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -29,10 +29,10 @@ class PostViewSet(viewsets.ModelViewSet):
     pagination_class = MyPageNumberPagination
 
 
-class CommentListView(ListAPIView):
-    """List comments of post"""
+class CommentListCreateView(ListCreateAPIView):
+    """List comments of post or create comment"""
     serializer_class = CommentListSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = MyPageNumberPagination
 
     def get_queryset(self):
@@ -40,14 +40,8 @@ class CommentListView(ListAPIView):
         post = get_object_or_404(Post, slug=post_slug)
         return post.comments.all()
 
-
-class AddCommentView(APIView):
-    """Add comment to post"""
-    serializer_class = AddCommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+        serializer = AddCommentSerializer(data=request.data)
         if serializer.is_valid():
             post_slug = self.kwargs.get('post_slug')
             post = get_object_or_404(Post, slug=post_slug)
