@@ -19,12 +19,12 @@ class User(AbstractUser):
     )
     email_verify = models.BooleanField(default=False)
 
-    # def has_perm_add_post(self):
-    #     return self.has_perm('blog_app.add_post')
-    #
-    # def has_perm_edit_post(self):
-    #     return self.has_perm('blog_app.change_post')
-    #
+    def has_perm_add_post(self):
+        return self.has_perm('blog_api.add_post')
+
+    def has_perm_edit_post(self):
+        return self.has_perm('blog_api.change_post')
+
     def get_group(self):
         return self.groups.all().first()
     #

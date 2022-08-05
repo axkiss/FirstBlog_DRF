@@ -1,6 +1,7 @@
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
+from rest_framework.permissions import BasePermission
 
 
 def send_feedback(request, data, email_feedback):
@@ -30,3 +31,9 @@ def send_feedback(request, data, email_feedback):
     )
     email.send()
 
+
+class IsWriterUser(BasePermission):
+    """Allows access only to writer users."""
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.has_perm_add_post() and request.user.has_perm_edit_post())
