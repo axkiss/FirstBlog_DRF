@@ -64,6 +64,23 @@ class CommentListCreateView(ListCreateAPIView):
         return Response({"detail": "Invalid data"})
 
 
+# class AddCommentView(APIView):
+#     """Add comment to post"""
+#     serializer_class = AddCommentSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             post_slug = self.kwargs.get('post_slug')
+#             post = get_object_or_404(Post, slug=post_slug)
+#             text = serializer.validated_data['text']
+#             new_comment = Comment(post=post, username=request.user, text=text)
+#             new_comment.save()
+#             return Response({"detail": "Success"})
+#         return Response({"detail": "Invalid data"})
+#
+
 class TagListView(ListAPIView):
     """List of posts including tag"""
     serializer_class = PostSerializer
