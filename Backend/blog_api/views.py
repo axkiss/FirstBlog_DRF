@@ -11,7 +11,7 @@ from .serializers import PostSerializer, TagCloudSerializer, PopularPostSerializ
     SearchPostSerializer, CommentListSerializer, AddCommentSerializer
 from .models import Post, Comment
 from .services import get_popular_posts, get_results_search
-from .utils import send_feedback
+from .utils import send_feedback, IsWriterUser
 
 
 class MyPageNumberPagination(pagination.PageNumberPagination):
@@ -25,8 +25,20 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
     lookup_field = 'slug'
-    permission_classes = [permissions.AllowAny]
     pagination_class = MyPageNumberPagination
+
+    def get_permissions(self):
+        """Instantiates and returns the list of permissions that this view requires."""
+
+        match self.action:
+            case 'create' | 'update' | 'partial_update':
+                permission_classes = [IsWriterUser]
+            case 'destroy':
+                permission_classes = [permissions.IsAdminUser]
+            case _:
+                permission_classes = [permissions.AllowAny]
+
+        return [permission() for permission in permission_classes]
 
 
 class CommentListCreateView(ListCreateAPIView):
