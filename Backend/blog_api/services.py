@@ -2,12 +2,14 @@ import os
 import re
 from io import BytesIO
 from PIL import Image
+from unidecode import unidecode
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.db.models import Q
 from django.core.files.base import ContentFile
 from django.utils.html import strip_tags
+from django.utils.text import slugify
 
 from users_api.utils import crop_img_to_square
 
@@ -54,11 +56,15 @@ def create_thumbnail_for_post(instance, height_side=100):
 
 def get_unique_slug(instance, max_length=80):
     """Add to slug now time and make unique"""
-    if instance.__class__.objects.filter(Q(slug=instance.slug) & ~Q(id=instance.id)).exists():
+
+    slug = slugify(unidecode(instance.title))
+
+    if instance.__class__.objects.filter(Q(slug=slug) & ~Q(id=instance.id)).exists():
         msec = str(timezone.now().microsecond)
         max_length -= len(msec)
-        return instance.slug[:max_length] + '-' + msec
-    return instance.slug[:max_length]
+        return slug[:max_length] + '-' + msec
+
+    return slug[:max_length]
 
 
 def get_popular_posts(model, days: int, cnt_posts: int):

@@ -4,9 +4,9 @@ from unidecode import unidecode
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
-from django.utils.text import slugify
 
 from .models import Post
+from .services import get_unique_slug
 
 
 @receiver(pre_save, sender=Post)
@@ -19,9 +19,8 @@ def make_or_update_slug(sender, instance, **kwargs):
             old_title = sender.objects.get(id=instance.id).title
         except ObjectDoesNotExist:
             return False
-
     if instance.title != old_title:
-        instance.slug = slugify(unidecode(instance.title))
+        instance.slug = get_unique_slug(instance, max_length=80)
 
 
 @receiver(pre_save, sender=Post)

@@ -7,7 +7,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from taggit.managers import TaggableManager
 
 from users_api.validators import ImageSizeValidator
-from .services import create_thumbnail_for_post, get_unique_slug
+from .services import create_thumbnail_for_post
 
 User = get_user_model()
 
@@ -42,7 +42,6 @@ class Post(models.Model):
     #     return None
     #
     def save(self, *args, **kwargs):
-        self.slug = get_unique_slug(self, max_length=80)
         create_thumbnail_for_post(self, height_side=100)
         super(Post, self).save(*args, **kwargs)
 
