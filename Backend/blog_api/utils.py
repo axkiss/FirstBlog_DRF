@@ -36,4 +36,6 @@ class IsWriterUser(BasePermission):
     """Allows access only to writer users."""
 
     def has_permission(self, request, view):
+        if request.user.is_anonymous:
+            return False
         return bool(request.user and request.user.has_perm_add_post() and request.user.has_perm_edit_post())
