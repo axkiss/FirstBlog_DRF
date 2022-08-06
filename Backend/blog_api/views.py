@@ -8,7 +8,7 @@ from taggit.models import Tag
 
 from blog_project_drf.settings import EMAIL_FEEDBACK
 from .serializers import PostSerializer, TagCloudSerializer, PopularPostSerializer, FeedBackSerializer, \
-    SearchPostSerializer, CommentListSerializer, AddCommentSerializer
+    SearchPostSerializer, CommentListSerializer, AddCommentSerializer, CreateUpdatePostSerializer
 from .models import Post, Comment
 from .services import get_popular_posts, get_results_search
 from .utils import send_feedback, IsWriterUser
@@ -22,7 +22,6 @@ class MyPageNumberPagination(pagination.PageNumberPagination):
 
 class PostViewSet(viewsets.ModelViewSet):
     """List of posts and detail"""
-    serializer_class = PostSerializer
     queryset = Post.objects.all()
     lookup_field = 'slug'
     pagination_class = MyPageNumberPagination
@@ -39,6 +38,15 @@ class PostViewSet(viewsets.ModelViewSet):
                 permission_classes = [permissions.AllowAny]
 
         return [permission() for permission in permission_classes]
+
+    def get_serializer_class(self):
+        match self.action:
+            case 'create' | 'update' | 'partial_update':
+                serializer_class = CreateUpdatePostSerializer
+            case _:
+                serializer_class = PostSerializer
+
+        return serializer_class
 
 
 class CommentListCreateView(ListCreateAPIView):

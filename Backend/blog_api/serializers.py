@@ -16,7 +16,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
-    """Serializer for model Post"""
+    """Serializer for model Post (list and retrieve actions)"""
     tag = TagSerializer(many=True, read_only=True)
     author = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
 
@@ -24,6 +24,16 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
         model = Post
         fields = '__all__'
         lookup_field = 'slug'
+
+
+class CreateUpdatePostSerializer(TaggitSerializer, serializers.ModelSerializer):
+    """Serializer for model Post (create and update actions)"""
+    tag = TagListSerializerField()
+    author = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+
+    class Meta:
+        model = Post
+        fields = ('title', 'description', 'image', 'author', 'tag')
 
 
 class TagCloudSerializer(serializers.Serializer):
@@ -69,6 +79,7 @@ class CommentListSerializer(serializers.ModelSerializer):
 
 class AddCommentSerializer(serializers.ModelSerializer):
     """Serializer for create comment to post"""
+
     class Meta:
         model = Comment
         fields = ('text',)
