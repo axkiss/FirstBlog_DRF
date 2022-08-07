@@ -4,6 +4,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from users_api.models import ExtraUserProfile
 from users_api.serializers import MyTokenObtainPairSerializer, RegisterUserSerializer, UserProfileSerializer
 from users_api.services import get_user_by_uidb, check_user_and_token, add_user_to_group
 from users_api.utils import send_email_for_verify
@@ -62,5 +63,6 @@ class EmailConfirmVerifyView(generics.GenericAPIView):
             user.email_verify = True
             user.save()
             add_user_to_group(user, group_name='Reader')
+            ExtraUserProfile.objects.get_or_create(user=user)
             return Response({"message": "Email confirm."})
         return Response({"message": "Email invalid confirm. Link is incorrect."})
