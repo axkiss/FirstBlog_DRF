@@ -44,11 +44,19 @@ class UserGroupSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer for user profile"""
     extrauserprofile = ExtraUserProfileSerializer()
-    groups = UserGroupSerializer(many=True)
+    groups = UserGroupSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'is_staff', 'groups', 'extrauserprofile')
+
+    def update(self, instance, validated_data):
+        extrauserprofile = validated_data.pop('extrauserprofile')
+        instance = super().update(instance, validated_data)
+        instance.extrauserprofile.about_me = extrauserprofile.get('about_me', instance.extrauserprofile.about_me)
+        instance.extrauserprofile.avatar = extrauserprofile.get('avatar', instance.extrauserprofile.avatar)
+        instance.extrauserprofile.save()
+        return instance
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
