@@ -16,14 +16,25 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class UserProfileView(generics.GenericAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """Show user profile"""
-    permission_classes = [permissions.IsAuthenticated]
+    queryset = User.objects.all()
     serializer_class = UserProfileSerializer
+    lookup_field = 'username'
 
-    def get(self, request, *args, **kwargs):
-        user = generics.get_object_or_404(User, username=self.kwargs.get('username'))
-        return Response({"user": UserProfileSerializer(user, context=self.get_serializer_context()).data})
+    def get_permissions(self):
+        match self.request.method:
+            case 'GET':
+                permission_classes = [permissions.IsAuthenticated]
+            case 'PUT' | 'PATCH':
+                if self.request.user.username == self.kwargs.get('username'):
+                    permission_classes = [permissions.AllowAny]
+                else:
+                    permission_classes = [permissions.IsAdminUser]
+            case _:
+                permission_classes = [permissions.IsAdminUser]
+
+        return [permission() for permission in permission_classes]
 
 
 class RegisterView(generics.GenericAPIView):
