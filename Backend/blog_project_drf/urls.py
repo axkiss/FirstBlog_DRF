@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('users_api.urls')),
+    path('account/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path('blog/', include('blog_api.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
